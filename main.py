@@ -1,4 +1,3 @@
-
 from data import MENU, resources
 
 # TODO: 1. Print report of a coffee machine resources
@@ -6,7 +5,11 @@ from data import MENU, resources
 coffee_machine_is_on = True
 
 current_resources = resources
+
 money = 0
+cur_water = current_resources['water']
+cur_milk = current_resources['milk']
+cur_coffee = current_resources['coffee']
 
 while coffee_machine_is_on:
 
@@ -14,7 +17,8 @@ while coffee_machine_is_on:
     #     if drink in MENU:
     #         MENU[drink][""] -=
 
-    def take_a_payment(drink_cost):
+
+    def take_a_payment(user_drink, drink_cost):
         float(drink_cost)
         # current_resources.money = money
 
@@ -24,16 +28,30 @@ while coffee_machine_is_on:
         current_nickels = int(input("how many nickels?:"))  # 5 cents
         current_pennies = int(input("how many pennies?:"))  # 1 cent
 
-        def calculate_payment(current_quarters, current_dimes, current_nickels, current_pennies):
-            total_payment = current_quarters * 0.25 + current_dimes * 0.10 + current_nickels * 0.05 + current_pennies * 0.01
-            return round(total_payment, 2)
+        total_payment = current_quarters * 0.25 + current_dimes * 0.10 + current_nickels * 0.05 + current_pennies * 0.01
 
-        print(drink_cost)
+        change = round(total_payment - drink_cost, 2)
+        global money
+        if change >= 0:
+            money = money + drink_cost
+            calculate_current_resouses()
+            return f"Here is ${change} in change..\nHere is your {user_drink} ☕️. Enjoy!"
+        else:
+            return "Sorry that's not enough money. Money refunded."
 
-        print(calculate_payment(current_quarters, current_dimes, current_nickels, current_pennies))
+
+    def calculate_current_resouses():
+        global cur_water
+        global cur_milk
+        global cur_coffee
+        cur_water -= MENU[user_choise_of_drink]['ingredients']['water']
+        cur_milk -= MENU[user_choise_of_drink]['ingredients']['milk']
+        cur_coffee -= MENU[user_choise_of_drink]['ingredients']['coffee']
+        return cur_coffee, cur_water, cur_milk
+
 
     def prepare_resources_report():
-        print (f"Water: {current_resources['water']}ml\nMilk: {current_resources['milk']}ml\nCoffee: {current_resources['coffee']}g\nMoney: ${money}")
+        print (f"Water: {cur_water}ml\nMilk: {cur_milk}ml\nCoffee: {cur_coffee}g\nMoney: ${money}")
 
     user_choise_of_drink = input("What would you like? (espresso/latte/cappuccino):")
 
@@ -44,6 +62,7 @@ while coffee_machine_is_on:
     if user_choise_of_drink == "report":
         prepare_resources_report()
 
-    if user_choise_of_drink == "espresso":
+    if user_choise_of_drink in MENU:
         # check_if_enough_resources("espresso")
-        take_a_payment(MENU[user_choise_of_drink]['cost'])
+        print(take_a_payment(user_choise_of_drink, MENU[user_choise_of_drink]['cost']))
+
